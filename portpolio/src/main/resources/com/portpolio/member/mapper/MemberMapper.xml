@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.portpolio.member.mapper.MemberMapper">
+
+	<select id="login" resultType="org.zerock.member.vo.MemberVO">
+		SELECT m.id, m.email, m.gradeNo,
+		m.status, g.gradeName
+		FROM member m
+		JOIN grade g ON m.gradeNo =
+		g.gradeNo
+		WHERE m.id = #{id} AND m.pw = #{pw}
+	</select>
+
+	<insert id="join">
+		insert into
+		member(id,pw,email,name,tel)values(#{id},#{pw},#{email},#{name},#{tel})
+	</insert>
+
+	<select id="userList" resultType="com.portpolio.member.vo.MemberVO">
+		SELECT M.ID, M.NAME, M.REGDATE, M.STATUS, G.GRADENAME
+		FROM member M,
+		grade G
+		WHERE G.gradeNo = M.gradeNo
+		<include refid="search" />
+		ORDER BY M.ID ASC
+		LIMIT #{startRow}, #{endRow}
+	</select>
+
+
+
+	<select id="getTotalRow" resultType="Long">
+		select count(*)
+		from member
+		<include refid="search2"></include>
+	</select>
+
+	<sql id="search">
+		<if test="word !=null and word !=''.toString()">
+			and (1 = 0
+			<if test="key.indexOf('t'.toString()) >= 0">
+				OR M.ID LIKE CONCAT('%', #{word}, '%'))
+			</if>
+
+		</if>
+	</sql>
+	<sql id="search2">
+		<if test="word !=null and word !=''.toString()">
+			where 1 = 0
+			<if test="key.indexOf('t'.toString()) >= 0">
+				or id like '%' || #{word} || '%'
+			</if>
+
+		</if>
+	</sql>
+
+	<select id="myMenu" resultType="com.portpolio.member.vo.MemberVO">
+		SELECT m.name, g.gradeNo
+		FROM member m
+		JOIN grade g ON m.gradeNo = g.gradeNo
+		WHERE m.id = #{id}
+	</select>
+
+	<select id="idCheck" parameterType="String" resultType="int">
+		SELECT
+		COUNT(id) FROM member WHERE id= #{id}
+	</select>
+
+	<select id="userView" resultType="com.portpolio.member.vo.MemberVO">
+		SELECT m.id, m.name, m.email,
+		m.tel, m.regDate, m.status, m.address, g.gradeName
+		FROM member m
+		JOIN
+		grade g ON g.gradeNo = m.gradeNo
+		WHERE m.id = #{id};
+	</select>
+
+
+	<update id="changeAd">
+		update member set address = #{address} where id =
+		#{id}
+	</update>
+
+	<select id="findPw" resultType="String">
+		select pw from member where email
+		= #{email}
+	</select>
+
+	<update id="changeGrade">
+		update member set gradeNo = #{gradeNo} where id =
+		#{id}
+	</update>
+
+	<select id="searchId" resultType="int">
+		SELECT COUNT(id) FROM member
+		WHERE id= #{id}
+	</select>
+
+	<insert id="joinKakao">
+		insert into
+		member(id,email,pw)values(#{id},#{email},#{pw})
+	</insert>
+
+	<select id="loginKakao"
+		resultType="com.portpolio.member.vo.MemberVO">
+		SELECT m.id, m.email, m.gradeNo, g.gradeName, m.status
+		FROM
+		member m
+		JOIN grade g ON m.gradeNo = g.gradeNo
+		WHERE m.id = #{id} AND
+		m.email = #{email};
+	</select>
+
+	<update id="userDelete">
+		update member set status = '탈퇴' where id
+		= #{id} and
+		pw = #{pw}
+	</update>
+
+	<update id="conlog">
+		UPDATE member SET condate = NOW() WHERE id = #{id}
+	</update>
+
+	<update id="sleepUser">
+		 <![CDATA[
+    		UPDATE member SET status = '휴면' WHERE (DATE_ADD(conDate, INTERVAL 90 DAY) < NOW())
+  		]]>
+	</update>
+
+	<update id="changePw">
+		update member set pw = #{changePw} where pw = #{pw}
+		and id = #{id}
+	</update>
+
+
+
+
+
+</mapper>

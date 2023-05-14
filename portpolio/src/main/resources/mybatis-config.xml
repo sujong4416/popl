@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- mybatis-config.xml -->
+<configuration>
+    <mappers>
+        <mapper resource="com/portpolio/board/mapper/BoardMapper.xml" />
+        <mapper resource="com/portpolio/member/mapper/BoardMapper.xml" />
+        <!-- 다른 매퍼 파일들 -->
+    </mappers>
+</configuration>
